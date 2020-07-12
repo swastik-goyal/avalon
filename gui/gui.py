@@ -44,7 +44,7 @@ class super_class:
 
     def browse_to_avalon(self):
         avalon = filedialog.askdirectory()
-        self.path_to_avalon.configure(text=avalon.replace('/', '\\'))
+        self.path_to_avalon.configure(text=avalon)
 
     def configure_avalon(self, **kwargs):
         global commit_id
