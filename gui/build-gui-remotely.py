@@ -1,41 +1,45 @@
+from tkinter import *
 import paramiko
 
-window = Tk()
+
+class test_connect:
+    def __init__(self, window):
+        # Get ip from user
+        self.ask_ip = Label(window, text="Please enter your hostname(ip)")
+        self.ask_ip.grid(row=0, column=0)
+        self.ip = Entry(window)
+        self.ip.grid(column=1, row=0)
+
+        # get username from user
+        self.ask_user = Label(window, text="Please enter your username")
+        self.ask_user.grid(row=1, column=0)
+        self.user = Entry(window)
+        self.user.grid(column=1, row=1)
+
+        # get password from user
+        self.ask_passwd = Label(window, text="Please enter your password")
+        self.ask_passwd.grid(row=2, column=0)
+        self.passwd = Entry(window, show="*")
+        self.passwd.grid(column=1, row=2)
+
+        # Create error labels
+        self.connect_check_error = Label(window, text="")
+        self.connect_check_error.grid(column=0, row=3)
+
+        # Create buttons
+        self.check_connect_button = Button(window, text="Check connectivity", command=self.check_connect)
+        self.check_connect_button.grid(row=4, column=0)
+
+    def check_connect(self):
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        try:
+            client.connect(hostname=self.ip.get(), username=self.user.get(), password=self.passwd.get())
+            self.connect_check_error.configure(text="Connected")
+        except:
+            self.connect_check_error.configure(text="Couldn't connect to remote!")
 
 
-Label(window, text='Please enter your IP : ').grid(row=0, column=0)
-Label(window, text='Please enter your username : ').grid(row=1, column=0)
-pw = Entry(window)
-pw.grid(row=2, column=0)
-
-ip = Entry(window)
-ip.grid(row=0, column=1)
-
-user = Entry(window)
-user.grid(row=1, column=1)
-
-def check_connect(hostname, username, password):
-    # initialize the SSH client
-    client = paramiko.SSHClient()
-    # add to known hosts
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    try:
-        client.connect(hostname=hostname, username=username, password=password, timeout=10)
-    except Exception as err:
-        c = err
-        Label(window, text="!Failed to connect to remote machine using ssh !").grid(row=4, column=0, columnspan=5)
-    else:
-        window.destroy()
-        return
-    stdin, stdout, stderr = client.exec_command("ls -al")
-    print(stdout.read().decode())
-    err = stderr.read().decode()
-    if err:
-        print(err)
-
-
-
-connect = Button(text='Check connectivity', command=lambda: check_connect(ip.get(), user.get(), pw.get()))
-connect.grid(row=3, column=0)
-
-window.mainloop()
+test = Tk()
+make_test = test_connect(test)
+test.mainloop()
